@@ -1,0 +1,40 @@
+{
+  "name": "@simple-upload/apps",
+  "version": "0.0.1",
+  "description": "Simple Upload for AWS Simple Storage Service (S3)",
+  "keywords": [
+    "simple",
+    "storage",
+    "service",
+    "upload"
+  ],
+  "homepage": "https://hieudoanm.github.io/simple-upload",
+  "bugs": {
+    "url": "https://github.com/hieudoanm/simple-upload/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/hieudoanm/simple-upload.git"
+  },
+  "license": "GPL-3.0",
+  "author": "hieudoanm <hieumdoan@gmail.com> (https://hieudoanm.github.io)",
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": "24.13.0"
+  },
+  "scripts": {
+    "docs": "rimraf ./docs && docsify init ./docs --theme dark",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "format": "turbo run format",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "docsify-cli": "4.4.4",
+    "husky": "9.1.7",
+    "rimraf": "6.1.2",
+    "turbo": "2.7.5"
+  }
+}

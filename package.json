@@ -1,5 +1,5 @@
 {
-  "name": "@simple-upload/apps",
+  "name": "@simple-upload/workspaces",
   "version": "0.0.1",
   "description": "Simple Upload for AWS Simple Storage Service (S3)",
   "keywords": [

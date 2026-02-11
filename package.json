@@ -20,7 +20,7 @@
   "author": "hieudoanm <hieumdoan@gmail.com> (https://hieudoanm.github.io)",
   "packageManager": "pnpm@10.29.2",
   "engines": {
-    "node": "25.6.0"
+    "node": "25.6.1"
   },
   "scripts": {
     "docs": "rimraf ./docs && docsify init ./docs --theme dark",

@@ -32,7 +32,7 @@
   "dependencies": {
     "@simple-upload/react": "workspace:*",
     "@simple-upload/server": "workspace:*",
-    "@tanstack/react-query": "5.90.20",
+    "@tanstack/react-query": "5.90.21",
     "@trpc/client": "11.10.0",
     "@trpc/next": "11.10.0",
     "@trpc/react-query": "11.10.0",

@@ -1,15 +1,15 @@
+import { ErrorModal } from '@simple-upload/components/ErrorModal';
+import { FileList } from '@simple-upload/components/FileList';
+import { Footer } from '@simple-upload/components/Footer';
+import { Navbar } from '@simple-upload/components/Navbar';
+import { SuccessModal } from '@simple-upload/components/SuccessModal';
+import { UploadDropzone } from '@simple-upload/components/UploadDropzone';
 import { uploadPost, useSimpleUpload } from '@simple-upload/react';
+import { trpc } from '@simple-upload/utils/trpc';
 import { NextPage } from 'next';
 import { useRef, useState } from 'react';
-import { trpc } from '../utils/trpc';
-import { ErrorModal } from '../components/ErrorModal';
-import { FileList } from '../components/FileList';
-import { Footer } from '../components/Footer';
-import { Navbar } from '../components/Navbar';
-import { SuccessModal } from '../components/SuccessModal';
-import { UploadDropzone } from '../components/UploadDropzone';
 
-const HomePage: NextPage = () => {
+const AppPage: NextPage = () => {
   const { uploading, progress } = useSimpleUpload();
   const presignPost = trpc.presignPost.useMutation();
 
@@ -80,4 +80,4 @@ const HomePage: NextPage = () => {
   );
 };
 
-export default HomePage;
+export default AppPage;

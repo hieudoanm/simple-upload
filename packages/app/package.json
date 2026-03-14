@@ -28,8 +28,9 @@
     "dev": "next dev --turbopack",
     "pretest": "jest --clearCache",
     "test": "jest",
-    "prebuild": "rimraf .next",
-    "build": "next build",
+    "prebuild": "rimraf .next ../../docs",
+    "build": "next build --turbopack",
+    "postbuild": "",
     "prestart": "kill-port 3000",
     "start": "next start"
   },

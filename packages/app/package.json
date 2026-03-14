@@ -22,14 +22,14 @@
     "node": "25.8.1"
   },
   "scripts": {
+    "lint": "eslint . --fix",
     "format": "prettier --cache --write .",
-    "predev": "kill-port 3000",
-    "dev": "next dev",
+    "predev": "rimraf .next && kill-port 3000",
+    "dev": "next dev --turbopack",
     "prebuild": "rimraf .next",
     "build": "next build",
     "prestart": "kill-port 3000",
     "start": "next start",
-    "lint": "eslint . --fix",
     "test": "jest"
   },
   "dependencies": {

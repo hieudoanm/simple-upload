@@ -3,6 +3,6 @@ import { appRouter } from '../../../server/routers/_app';
 // export API handler
 // @link https://trpc.io/docs/v11/server/adapters
 export default trpcNext.createNextApiHandler({
-	router: appRouter,
-	createContext: () => ({}),
+  router: appRouter,
+  createContext: () => ({}),
 });

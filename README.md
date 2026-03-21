@@ -1,369 +1,178 @@
-# 🚀 SUS3 — Simple Upload for AWS Simple Storage Service (S3) 🪣
-
-**SUS3** is a tiny, copy-paste–friendly upload utility for **Amazon S3** ☁️
-
-- 🧩 No abstractions
-- ✨ No magic
-- 🚫 No SDK on the client
-- 🔐 Works with **presigned PUT, POST, and Multipart**
-- ⚛️ Framework-native hooks (**React**, **Solid**)
-- 🖥️ Server helpers for **TypeScript backends**
-
-> 🧠 SUS3 is “just enough glue” between your frontend and S3.
+# 🚀 [Simple Upload](https://hieudoanm.github.io/simple-upload/)
 
 ## 📚 Table of Contents
 
-- [🚀 SUS3 — Simple Upload for AWS Simple Storage Service (S3) 🪣](#-sus3--simple-upload-for-aws-simple-storage-service-s3-)
+- [🚀 Simple Upload](#-simple-upload)
   - [📚 Table of Contents](#-table-of-contents)
-  - [🎬 Demo](#-demo)
-  - [✨ Features](#-features)
-  - [📦 Installation](#-installation)
-  - [✂️ Code Usage (Copy \& Paste Friendly)](#️-code-usage-copy--paste-friendly)
-  - [⚛️ React Usage](#️-react-usage)
-    - [📤 Client-side upload (PUT)](#-client-side-upload-put)
-  - [🧱 SolidJS Usage](#-solidjs-usage)
-    - [📤 Client-side upload](#-client-side-upload)
-  - [🖥️ TypeScript Server Usage](#️-typescript-server-usage)
-    - [⚙️ Setup](#️-setup)
-  - [🧠 Design Principles](#-design-principles)
-  - [🧪 Testing](#-testing)
-  - [🧩 When NOT to use SUS3](#-when-not-to-use-sus3)
-  - [📄 License](#-license)
-
----
-
-## 🎬 Demo
-
-![cover](./images/cover.png)
-
-A minimal demo app showing:
-
-- Drag & drop file upload  
-- Presigned PUT uploads to S3  
-- Real-time progress tracking  
-- React + Solid parity  
-- Zero client-side AWS SDK usage  
-
-📖 [Demo Walkthrough](https://hieudoanm-simple-upload.vercel.app/)
-
----
-
-## ✨ Features
-
-- ✅🔗 Presigned **PUT** uploads
-- ✅📮 Presigned **POST** uploads (strict policy)
-- ✅🧱 **Multipart** uploads for large files
-- ⚛️ React hook
-- 🧱 SolidJS hook
-- 🛡️ Type-safe backend helpers
-- 🌐 Fetch-based (no XHR unless you want it)
-- 📄 All code fits in **one file per package**
-
----
-
-## 📦 Installation
-
-```bash
-pnpm add @simple-upload/react @simple-upload/solid
-pnpm add @simple-upload/server
-```
-
-or
-
-```bash
-yarn add @simple-upload/react @simple-upload/solid
-yarn add @simple-upload/server
-```
-
-or
-
-```bash
-npm install @simple-upload/react @simple-upload/solid
-npm install @simple-upload/server
-```
-
----
-
-## ✂️ Code Usage (Copy & Paste Friendly)
-
-Each package intentionally exposes **everything from a single file** 📄
-
-You can:
-
-- 📥 Import it normally
-- ✂️ Or copy the file into your project and modify freely
-
-🚫 No hidden dependencies.
-
----
-
-## ⚛️ React Usage
-
-### 📤 Client-side upload (PUT)
-
-```tsx
-import { useSimpleUpload } from '@simple-upload/react';
-
-export const UploadButton = () => {
-  const { uploadPutFile, uploading, progress } = useSimpleUpload();
-
-  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const res = await fetch('/api/presign-put');
-    const { url } = await res.json();
-
-    await uploadPutFile(file, url);
-  };
-
-  return (
-    <>
-      <input type="file" onChange={onChange} />
-      {uploading && <p>Uploading… {progress}%</p>}
-    </>
-  );
-};
-```
-
----
-
-## 🧱 SolidJS Usage
-
-### 📤 Client-side upload
-
-```tsx
-import { useSimpleUpload } from '@simple-upload/solid';
-
-const Upload = () => {
-  const { uploadPutFile, uploading, progress } = useSimpleUpload();
-
-  const onFile = async (e: Event) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    const res = await fetch('/api/presign-put');
-    const { url } = await res.json();
-
-    await uploadPutFile(file, url);
-  };
-
-  return (
-    <>
-      <input type="file" onChange={onFile} />
-      <Show when={uploading()}>
-        <p>Uploading… {progress()}%</p>
-      </Show>
-    </>
-  );
-};
-```
-
----
-
-## 🖥️ TypeScript Server Usage
-
-Works in:
-
-- ⏭️ **Next.js API routes**
-- 🧬 **GraphQL resolvers**
-- 🔌 **tRPC procedures**
-- 🟢 Any Node.js backend
-
-### ⚙️ Setup
-
-```ts
-import {
-  S3Client,
-  CreateMultipartUploadCommand,
-  UploadPartCommand,
-  CompleteMultipartUploadCommand,
-  PutObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
-
-/* ---------------------------------- */
-/* Config                             */
-/* ---------------------------------- */
-
-export interface SimpleUploadConfig {
-  bucket: string;
-
-  /** AWS region OR "auto" for Supabase */
-  region: string;
-
-  /** Required for Supabase */
-  endpoint: string;
-
-  /** Required for Supabase */
-  credentials: {
-    accessKeyId: string;
-    secretAccessKey: string;
-  };
-
-  maxFileSize?: number;
-  allowedTypes?: string[];
-  expiresInSeconds?: number;
-}
-
-export const createSimpleUpload = (config: SimpleUploadConfig) => {
-  const s3 = new S3Client({
-    region: config.region,
-    endpoint: config.endpoint,
-    credentials: config.credentials,
-    forcePathStyle: !!config.endpoint, // 👈 REQUIRED for Supabase
-  });
-
-  const validate = (file: { size?: number; type?: string }) => {
-    if (config.maxFileSize && file.size && file.size > config.maxFileSize) {
-      throw new Error('File too large');
-    }
-
-    if (
-      config.allowedTypes &&
-      file.type &&
-      !config.allowedTypes.includes(file.type)
-    ) {
-      throw new Error('Invalid file type');
-    }
-  };
-
-  /* ---------- PUT ---------- */
-  const presignPut = async (input: {
-    key: string;
-    type: string;
-    size?: number;
-  }): Promise<string> => {
-    validate(input);
-
-    const cmd = new PutObjectCommand({
-      Bucket: config.bucket,
-      Key: input.key,
-      ContentType: input.type,
-    });
-
-    return getSignedUrl(s3, cmd, {
-      expiresIn: config.expiresInSeconds ?? 60,
-    });
-  };
-
-  /* ---------- POST ---------- */
-  const presignPost = async (input: {
-    key: string;
-    type: string;
-    size: number;
-  }) => {
-    validate(input);
-
-    return createPresignedPost(s3, {
-      Bucket: config.bucket,
-      Key: input.key,
-      Expires: config.expiresInSeconds ?? 60,
-      Conditions: [
-        ['content-length-range', 0, config.maxFileSize ?? input.size],
-        ['starts-with', '$Content-Type', input.type],
-      ],
-      Fields: {
-        'Content-Type': input.type,
-      },
-    });
-  };
-
-  /* ---------- Multipart ---------- */
-  const createMultipart = async (input: {
-    key: string;
-    type: string;
-  }): Promise<string> => {
-    const res = await s3.send(
-      new CreateMultipartUploadCommand({
-        Bucket: config.bucket,
-        Key: input.key,
-        ContentType: input.type,
-      })
-    );
-
-    if (!res.UploadId) {
-      throw new Error('Failed to create multipart upload');
-    }
-
-    return res.UploadId;
-  };
-
-  const presignPart = async (input: {
-    key: string;
-    uploadId: string;
-    partNumber: number;
-  }): Promise<string> => {
-    const cmd = new UploadPartCommand({
-      Bucket: config.bucket,
-      Key: input.key,
-      UploadId: input.uploadId,
-      PartNumber: input.partNumber,
-    });
-
-    return getSignedUrl(s3, cmd, { expiresIn: 3600 });
-  };
-
-  const completeMultipart = async (input: {
-    key: string;
-    uploadId: string;
-    parts: { ETag: string; PartNumber: number }[];
-  }): Promise<void> => {
-    await s3.send(
-      new CompleteMultipartUploadCommand({
-        Bucket: config.bucket,
-        Key: input.key,
-        UploadId: input.uploadId,
-        MultipartUpload: { Parts: input.parts },
-      })
-    );
-  };
-
-  return {
-    presignPut,
-    presignPost,
-    createMultipart,
-    presignPart,
-    completeMultipart,
-  };
-};
-```
-
----
-
-## 🧠 Design Principles
-
-- 🧭 You own the flow
-- 🔓 No runtime coupling
-- 🧹 No global config
-- 📄 One file = one mental model
-- 🐞 Easy to debug
-- 🗑️ Easy to delete
-
-If you understand S3 presigned URLs, you already understand SUS3 🎯
-
----
-
-## 🧪 Testing
-
-- 🧪 React & Solid hooks are unit-testable
-- 🧰 Uses **jest + jsdom**
-- 🌐 Fetch is fully mockable
-- ☁️ No AWS calls in client tests
-
----
-
-## 🧩 When NOT to use SUS3
-
-- 🔁 You want resumable uploads across sessions
-- ♻️ You need automatic retries or concurrency control
-- 🎨 You want a UI component library
-
-SUS3 is intentionally **low-level** ⚙️
-
----
-
-## 📄 License
-
-🧾 **GPL-3.0** — this project is licensed under the GNU General Public License v3.0.
+  - [📖 1. Overview](#-1-overview)
+  - [✨ 2. Features](#-2-features)
+  - [🎥 3. Demo](#-3-demo)
+  - [🚀 4. Usage](#-4-usage)
+  - [🛠️ 5. Development Stack](#️-5-development-stack)
+    - [🖥️ 5.1 Development Tools](#️-51-development-tools)
+    - [⚙️ 5.2 Monorepo](#️-52-monorepo)
+    - [💻 5.3 Application](#-53-application)
+      - [⚛️ 5.3.1 Front-end](#️-531-front-end)
+      - [📡 5.3.2 Back-end](#-532-back-end)
+    - [📟 5.4 CLI (Command-line Interface)](#-54-cli-command-line-interface)
+  - [📄 6. License](#-6-license)
+
+## 📖 1. Overview
+
+Simple Upload is a focused project in this monorepo that delivers a practical tool with a clean user experience across platforms.
+
+## ✨ 2. Features
+
+1. [x] Core functionality tailored to Simple Upload
+2. [x] Web experience for quick access
+3. [x] CLI distribution for automation workflows
+4. [x] Mobile-ready build targets
+5. [x] Desktop-ready build targets
+
+## 🎥 3. Demo
+
+- 🌐 [Live Demo](https://hieudoanm.github.io/simple-upload/)
+
+## 🚀 4. Usage
+
+- 🌐 [Web](https://hieudoanm.github.io/simple-upload/)
+- 💻 [CLI](https://github.com/hieudoanm/simple-upload/releases)
+- 📱 [Mobile](https://github.com/hieudoanm/simple-upload/releases)
+- 🖥️ [Desktop](https://github.com/hieudoanm/simple-upload/releases)
+
+## 🛠️ 5. Development Stack
+
+### 🖥️ 5.1 Development Tools
+
+| No  | Group | Technology                 | GitHub              |
+| --- | ----- | -------------------------- | ------------------- |
+| 1   | IDE   | [Antigravity][antigravity] |                     |
+| 2   | IDE   | [Cursor][cursor]           | [GitHub][gh-cursor] |
+| 3   | Agent | [Claude][claude]           | [GitHub][gh-claude] |
+
+### ⚙️ 5.2 Monorepo
+
+| No  | Group        | Technology             | GitHub                 |
+| --- | ------------ | ---------------------- | ---------------------- |
+| 1   | Git          | [GitHub][github]       | [GitHub][gh-github]    |
+| 2   | Git Hooks    | [Husky][husky]         | [GitHub][gh-husky]     |
+| 3   | Build        | [Turborepo][turborepo] | [GitHub][gh-turborepo] |
+| 4   | Dependencies | [Renovate][renovate]   | [GitHub][gh-renovate]  |
+
+### 💻 5.3 Application
+
+#### ⚛️ 5.3.1 Front-end
+
+| No  | Group            | Technology                  | GitHub                   |
+| --- | ---------------- | --------------------------- | ------------------------ |
+| 1   | Language         | [TypeScript][typescript]    | [GitHub][gh-typescript]  |
+| 2   | Runtime          | [Node.js][node.js]          | [GitHub][gh-node]        |
+| 3   | Packages Manager | [pnpm][pnpm]                | [GitHub][gh-pnpm]        |
+| 4   | Linter           | [ESLint][eslint]            | [GitHub][gh-eslint]      |
+| 5   | Formatter        | [Prettier][prettier]        | [GitHub][gh-prettier]    |
+| 6   | Testing          | [Jest][jest]                | [GitHub][gh-jest]        |
+| 7   | Framework        | [Next.js][nextjs]           | [GitHub][gh-nextjs]      |
+| 8   | Styling          | [Tailwind CSS][tailwindcss] | [GitHub][gh-tailwindcss] |
+| 9   | UI               | [DaisyUI][daisyui]          | [GitHub][gh-daisyui]     |
+| 10  | Desktop          | [Tauri][tauri]              | [GitHub][gh-tauri]       |
+| 11  | Mobile           | [Capacitor.js][capacitorjs] | [GitHub][gh-capacitorjs] |
+| 12  | Hosting          | [GitHub Pages][githubpages] | [GitHub][gh-githubpages] |
+
+#### 📡 5.3.2 Back-end
+
+| No  | Group   | Technology                    | GitHub                    |
+| --- | ------- | ----------------------------- | ------------------------- |
+| 1   | BFF     | [tRPC][trpc]                  | [GitHub][gh-trpc]         |
+| 2   | ORM     | [Prisma][prisma]              | [GitHub][gh-prisma]       |
+| 3   | KV      | [Redis][redis]                | [GitHub][gh-redis]        |
+| 4   | JSON    | [MongoDB][mongodb]            | [GitHub][gh-mongodb]      |
+| 5   | SQL     | [PostgreSQL][postgresql]      | [GitHub][gh-postgresql]   |
+| 6   | Auth    | [Auth.js][auth.js]            | [GitHub][gh-authjs]       |
+| 7   | Email   | [Resend][resend]              | [GitHub][gh-resend]       |
+| 8   | Payment | [Lemon Squeezy][lemonsqueezy] | [GitHub][gh-lemonsqueezy] |
+
+### 📟 5.4 CLI (Command-line Interface)
+
+| No  | Group     | Technology       | GitHub              |
+| --- | --------- | ---------------- | ------------------- |
+| 1   | Language  | [Golang][golang] | [GitHub][gh-golang] |
+| 2   | Framework | [Cobra][cobra]   | [GitHub][gh-cobra]  |
+
+## 📄 6. License
+
+[GNU General Public License - Version 3 (GPL-3.0)](https://opensource.org/license/gpl-3.0)
+
+<!-- Development Tools -->
+
+[antigravity]: https://antigravity.google/
+[cursor]: https://cursor.com/
+[claude]: https://claude.ai/
+
+[gh-cursor]: https://github.com/cursor/cursor
+[gh-claude]: https://github.com/anthropics/claude-code
+
+<!-- Monorepo -->
+
+[github]: https://github.com/
+[husky]: https://typicode.github.io/husky/
+[turborepo]: https://turborepo.org/
+[renovate]: https://www.mend.io/renovate/
+
+[gh-github]: https://github.com/github
+[gh-husky]: https://github.com/typicode/husky
+[gh-turborepo]: https://github.com/vercel/turborepo
+[gh-renovate]: https://github.com/renovatebot/renovate
+
+<!-- Application -->
+
+[typescript]: https://www.typescriptlang.org/
+[node.js]: https://nodejs.org/
+[pnpm]: https://pnpm.io/
+[eslint]: https://eslint.org/
+[prettier]: https://prettier.io/
+[jest]: https://jestjs.io/
+[nextjs]: https://nextjs.org/
+[tailwindcss]: https://tailwindcss.com/
+[daisyui]: https://daisyui.com/
+[tauri]: https://v2.tauri.app/
+[capacitorjs]: https://capacitorjs.com/
+[githubpages]: https://pages.github.com/
+
+[gh-typescript]: https://github.com/microsoft/typescript
+[gh-node]: https://github.com/nodejs/node
+[gh-pnpm]: https://github.com/pnpm/pnpm
+[gh-eslint]: https://github.com/eslint/eslint
+[gh-prettier]: https://github.com/prettier/prettier
+[gh-jest]: https://github.com/facebook/jest
+[gh-nextjs]: https://github.com/vercel/next.js
+[gh-tailwindcss]: https://github.com/tailwindlabs/tailwindcss
+[gh-daisyui]: https://github.com/saadeghi/daisyui
+[gh-tauri]: https://github.com/tauri-apps/tauri
+[gh-capacitorjs]: https://github.com/ionic-team/capacitor
+[gh-githubpages]: https://github.com/pages/github
+
+[trpc]: https://trpc.io/
+[prisma]: https://prisma.io/
+[redis]: https://redis.io/
+[mongodb]: https://www.mongodb.com/
+[postgresql]: https://www.postgresql.org/
+[auth.js]: https://authjs.dev/
+[resend]: https://resend.com/
+[lemonsqueezy]: https://www.lemonsqueezy.com/
+
+[gh-trpc]: https://github.com/trpc/trpc
+[gh-prisma]: https://github.com/prisma/prisma
+[gh-redis]: https://github.com/redis/redis
+[gh-mongodb]: https://github.com/mongodb/mongo
+[gh-postgresql]: https://github.com/postgres/postgres
+[gh-authjs]: https://github.com/nextauthjs/next-auth
+[gh-resend]: https://github.com/resend
+[gh-lemonsqueezy]: https://github.com/lmsqueezy/lemonsqueezy.js
+
+<!-- CLI -->
+
+[golang]: https://go.dev/
+[cobra]: https://cobra.dev/
+
+[gh-golang]: https://github.com/golang/go
+[gh-cobra]: https://github.com/spf13/cobra

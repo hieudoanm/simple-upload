@@ -1,8 +1,8 @@
 import '@simple-upload/styles/globals.css';
+import { HeadTemplate } from '../templates/HeadTemplate';
 import { trpc } from '@simple-upload/utils/trpc';
 import type { AppProps } from 'next/app';
 import { Geist, Geist_Mono } from 'next/font/google';
-import Head from 'next/head';
 import { FC } from 'react';
 
 const geistSans = Geist({
@@ -18,11 +18,7 @@ const geistMono = Geist_Mono({
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <>
-      <Head>
-        <title>Simple Upload</title>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="manifest" href="/manifest.json" />
-      </Head>
+      <HeadTemplate basic={{ title: 'Simple Upload' }} />
       <div className={`${geistSans.className} ${geistMono.className}`}>
         <Component {...pageProps} />
       </div>

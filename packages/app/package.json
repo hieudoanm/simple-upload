@@ -35,9 +35,9 @@
     "start": "next start"
   },
   "dependencies": {
-    "@capacitor/android": "8.2.0",
-    "@capacitor/core": "8.2.0",
-    "@capacitor/ios": "8.2.0",
+    "@capacitor/android": "8.3.0",
+    "@capacitor/core": "8.3.0",
+    "@capacitor/ios": "8.3.0",
     "@simple-upload/react": "workspace:*",
     "@simple-upload/server": "workspace:*",
     "@tanstack/react-query": "5.95.2",
@@ -51,7 +51,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@capacitor/cli": "8.2.0",
+    "@capacitor/cli": "8.3.0",
     "@tailwindcss/postcss": "4.2.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",

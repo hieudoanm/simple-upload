@@ -32,7 +32,10 @@
     "build": "next build --turbopack",
     "postbuild": "",
     "prestart": "kill-port 3000",
-    "start": "next start"
+    "start": "next start",
+    "tauri": "tauri",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build"
   },
   "dependencies": {
     "@capacitor/android": "8.3.0",
@@ -48,7 +51,8 @@
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "zod": "4.3.6"
+    "zod": "4.3.6",
+    "@tauri-apps/api": "2.10.1"
   },
   "devDependencies": {
     "@capacitor/cli": "8.3.0",

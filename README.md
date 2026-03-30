@@ -39,6 +39,9 @@ Simple Upload is a focused project in this monorepo that delivers a practical to
 - 💻 [CLI](https://github.com/hieudoanm/simple-upload/releases)
 - 📱 [Mobile](https://github.com/hieudoanm/simple-upload/releases)
 - 🖥️ [Desktop](https://github.com/hieudoanm/simple-upload/releases)
+  - 🍎 [MacOS](https://github.com/hieudoanm/simple-upload/releases/tag/macos-latest)
+  - 🐧 [Ubuntu](https://github.com/hieudoanm/simple-upload/releases/tag/ubuntu-latest)
+  - 🪟 [Windows](https://github.com/hieudoanm/simple-upload/releases/tag/windows-latest)
 
 ## 🛠️ 5. Development Stack
 

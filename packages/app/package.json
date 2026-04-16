@@ -38,9 +38,9 @@
     "build:desktop": "tauri build"
   },
   "dependencies": {
-    "@capacitor/android": "8.3.0",
-    "@capacitor/core": "8.3.0",
-    "@capacitor/ios": "8.3.0",
+    "@capacitor/android": "8.3.1",
+    "@capacitor/core": "8.3.1",
+    "@capacitor/ios": "8.3.1",
     "@simple-upload/react": "workspace:*",
     "@simple-upload/server": "workspace:*",
     "@tanstack/react-query": "5.99.0",
@@ -55,7 +55,7 @@
     "zod": "4.3.6"
   },
   "devDependencies": {
-    "@capacitor/cli": "8.3.0",
+    "@capacitor/cli": "8.3.1",
     "@tailwindcss/postcss": "4.2.2",
     "@tauri-apps/cli": "2.10.1",
     "@testing-library/jest-dom": "6.9.1",
